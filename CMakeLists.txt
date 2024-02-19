@@ -40,7 +40,7 @@ find_package(std_msgs REQUIRED)
 find_package(dnn_node REQUIRED)
 find_package(hbm_img_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
+find_package(ai_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 
 link_directories(
@@ -56,7 +56,7 @@ ament_target_dependencies(
   std_msgs
   sensor_msgs
   hbm_img_msgs
-  geometry_msgs
+  ai_msgs
 )
 
 target_link_libraries(${PROJECT_NAME}

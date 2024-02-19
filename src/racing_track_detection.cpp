@@ -86,7 +86,7 @@ TrackDetectionNode::TrackDetectionNode(const std::string& node_name,
   }
 
   publisher_ =
-    this->create_publisher<geometry_msgs::msg::PointStamped>("racing_track_center_detection", 5);
+    this->create_publisher<ai_msgs::msg::PerceptionTargets>("racing_track_center_detection", 5);
   subscriber_hbmem_ =
     this->create_subscription_hbmem<hbm_img_msgs::msg::HbmMsg1080P>(
       sub_img_topic_,
@@ -135,14 +135,24 @@ int TrackDetectionNode::PostProcess(
   float y = result->y;
   RCLCPP_INFO(rclcpp::get_logger("TrackDetectionNode"),
                "post coor x: %d    y:%d", int(x), int(y));
-  auto point_msg = std::make_unique<geometry_msgs::msg::PointStamped>();
-  point_msg->header.stamp.sec = outputs->msg_header->stamp.sec;
-  point_msg->header.stamp.nanosec = outputs->msg_header->stamp.nanosec;
-  point_msg->point.x = x;
-  point_msg->point.y = y;
-  point_msg->point.z = 0.0; // 设置z坐标值为0，表示二维点
+  ai_msgs::msg::PerceptionTargets::UniquePtr msg(
+        new ai_msgs::msg::PerceptionTargets());
+  msg->set__header(*outputs->msg_header);
+  ai_msgs::msg::Target target;
+  target.set__type("track_center");
+  ai_msgs::msg::Point track_center;
 
-  publisher_->publish(std::move(point_msg));
+  geometry_msgs::msg::Point32 pt;
+  pt.set__x(x);
+  pt.set__y(y);
+  track_center.point.emplace_back(pt);
+  //To display
+  track_center.point.emplace_back(pt);
+  std::vector<ai_msgs::msg::Point> tar_points;
+  tar_points.push_back(track_center);
+  target.set__points(tar_points);
+  msg->targets.emplace_back(target);
+  publisher_->publish(std::move(msg));
   return 0;
 }
 

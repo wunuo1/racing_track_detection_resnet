@@ -22,7 +22,7 @@
 #include "dnn_node/dnn_node_data.h"
 #include "hbm_img_msgs/msg/hbm_msg1080_p.hpp"
 #include "std_msgs/msg/int16_multi_array.hpp"
-#include "geometry_msgs/msg/point_stamped.hpp"
+#include "ai_msgs/msg/perception_targets.hpp"
 #include "sensor_msgs/msg/image.hpp"
 
 using rclcpp::NodeOptions;
@@ -80,8 +80,9 @@ class TrackDetectionNode : public DnnNode {
   bool AssignParams(const std::vector<rclcpp::Parameter> & parameters);
   ModelTaskType model_task_type_ = ModelTaskType::ModelInferType;
   rclcpp::SubscriptionHbmem<hbm_img_msgs::msg::HbmMsg1080P>::SharedPtr
-    subscriber_hbmem_;
-  rclcpp::Publisher<geometry_msgs::msg::PointStamped>::SharedPtr publisher_;
+    subscriber_hbmem_ = nullptr;
+  rclcpp::Publisher<ai_msgs::msg::PerceptionTargets>::SharedPtr publisher_ =
+      nullptr;
   cv::Mat image_bgr_;
   std::string model_path_ = "/opt/nodehub_model/race_detection/race_track_detection_simulation.bin";
   std::string sub_img_topic_ = "/hbmem_img";
