@@ -44,7 +44,7 @@ ros2 launch racing_track_detection_resnet racing_track_detection_resnet.launch.p
 
 | 名称                          | 消息类型                                                     | 说明                                                   |
 | ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
-| /racing_track_center_detection                      | geometry_msgs/msg/PointStamped                | 发布赛道中点的图像坐标                 |
+| /racing_track_center_detection                      | ai_msgs::msg::PerceptionTargets               | 发布赛道中点的图像坐标                 |
 
 ### Sub话题
 | 名称                          | 消息类型                                                     | 说明                                                   |
