@@ -24,6 +24,9 @@ sudo apt install -y tros-racing-track-detection-resnet
 ```shell
 source /opt/tros/local_setup.bash
 
+# web端可视化赛道中点（启动功能后在浏览器打开 ip:8000）
+export WEB_SHOW=TRUE
+
 #仿真（使用仿真模型）
 ros2 launch racing_track_detection_resnet racing_track_detection_resnet_simulation.launch.py
 
