@@ -42,6 +42,7 @@ find_package(hbm_img_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(ai_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 link_directories(
   ${CMAKE_SYSROOT}/usr/lib/hbbpu/
@@ -57,6 +58,7 @@ ament_target_dependencies(
   sensor_msgs
   hbm_img_msgs
   ai_msgs
+  geometry_msgs
 )
 
 target_link_libraries(${PROJECT_NAME}
