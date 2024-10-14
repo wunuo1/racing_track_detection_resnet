@@ -136,7 +136,7 @@ int TrackDetectionNode::PostProcess(
   line_coordinate_parser->Parse(result, outputs->output_tensors[0]);
 
   float x = result->x;
-  float y = result->y;
+  float y = (result->y) + 256;
   RCLCPP_INFO(rclcpp::get_logger("TrackDetectionNode"),
                "post coor x: %d    y:%d", int(x), int(y));
   ai_msgs::msg::PerceptionTargets::UniquePtr msg(
