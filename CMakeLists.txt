@@ -78,6 +78,11 @@ install(TARGETS racing_track_detection_resnet
 install(DIRECTORY
   ${PROJECT_SOURCE_DIR}/launch/
   DESTINATION share/${PROJECT_NAME}/launch)
+  
+install(DIRECTORY
+	  ${PROJECT_SOURCE_DIR}/config/
+	    DESTINATION lib/${PROJECT_NAME}/config
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
