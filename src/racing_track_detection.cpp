@@ -87,6 +87,15 @@ TrackDetectionNode::TrackDetectionNode(const std::string& node_name,
 
   publisher_ =
     this->create_publisher<ai_msgs::msg::PerceptionTargets>("racing_track_center_detection", 5);
+#ifdef UBUTNU_22
+  subscriber_hbmem_ =
+    this->create_subscription<hbm_img_msgs::msg::HbmMsg1080P>(
+      sub_img_topic_,
+      10,
+      std::bind(&TrackDetectionNode::subscription_callback,
+      this,
+      std::placeholders::_1)); 
+#else
   subscriber_hbmem_ =
     this->create_subscription_hbmem<hbm_img_msgs::msg::HbmMsg1080P>(
       sub_img_topic_,
@@ -94,6 +103,7 @@ TrackDetectionNode::TrackDetectionNode(const std::string& node_name,
       std::bind(&TrackDetectionNode::subscription_callback,
       this,
       std::placeholders::_1)); 
+#endif
 }
 
 TrackDetectionNode::~TrackDetectionNode() {
@@ -109,28 +119,22 @@ int TrackDetectionNode::SetNodePara() {
   dnn_node_para_ptr_->model_file = model_path_;
   dnn_node_para_ptr_->model_task_type = model_task_type_;
   dnn_node_para_ptr_->task_num = 1;
-  dnn_node_para_ptr_->bpu_core_ids.push_back(hobot::dnn_node::BPUCoreIDType::BPU_CORE_1);;
-  return 0;
-}
-
-int TrackDetectionNode::SetOutputParser() {
-  auto model_manage = GetModel();
-  if (!model_manage) {
-    RCLCPP_ERROR(rclcpp::get_logger("TrackDetectionNode"), "Invalid model");
-    return -1;
-  }
-  int output_index = model_manage->GetOutputCount() - 1;
-
-  std::shared_ptr<OutputParser> line_coordinate_parser =
-      std::make_shared<LineCoordinateParser>();
-  model_manage->SetOutputParser(output_index, line_coordinate_parser);
-
+#ifdef UBUTNU_22
+  dnn_node_para_ptr_->bpu_core_ids.push_back(HB_BPU_CORE_0);
+#else
+  dnn_node_para_ptr_->bpu_core_ids.push_back(hobot::dnn_node::BPUCoreIDType::BPU_CORE_1);
+#endif
   return 0;
 }
 
 int TrackDetectionNode::PostProcess(
   const std::shared_ptr<DnnNodeOutput> &outputs) {
-  auto result = dynamic_cast<LineCoordinateResult *>(outputs->outputs[0].get());  
+  std::shared_ptr<LineCoordinateParser> line_coordinate_parser =
+      std::make_shared<LineCoordinateParser>();
+  std::shared_ptr<LineCoordinateResult> result =
+      std::make_shared<LineCoordinateResult>();
+  line_coordinate_parser->Parse(result, outputs->output_tensors[0]);
+
   float x = result->x;
   float y = result->y;
   RCLCPP_INFO(rclcpp::get_logger("TrackDetectionNode"),
@@ -269,8 +273,6 @@ int TrackDetectionNode::Predict(
 
 int32_t LineCoordinateParser::Parse(
     std::shared_ptr<LineCoordinateResult> &output,
-    std::vector<std::shared_ptr<InputDescription>> &input_descriptions,
-    std::shared_ptr<OutputDescription> &output_description,
     std::shared_ptr<DNNTensor> &output_tensor) {
   if (!output_tensor) {
     RCLCPP_ERROR(rclcpp::get_logger("TrackDetectionNode"), "invalid out tensor");

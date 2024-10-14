@@ -30,33 +30,25 @@ using rclcpp::NodeOptions;
 using hobot::dnn_node::DNNInput;
 using hobot::dnn_node::DnnNode;
 using hobot::dnn_node::DnnNodeOutput;
-using hobot::dnn_node::DNNResult;
 using hobot::dnn_node::ModelTaskType;
 
 using hobot::dnn_node::DNNTensor;
-using hobot::dnn_node::OutputDescription;
-using hobot::dnn_node::OutputParser;
 
-using hobot::dnn_node::InputDescription;
-using hobot::dnn_node::SingleBranchOutputParser;
 
-class LineCoordinateResult : public DNNResult {
+class LineCoordinateResult{
  public:
   float x;
   float y;
-  void Reset() override {x = -1.0; y = -1.0;}
+  void Reset() {x = -1.0; y = -1.0;}
 };
 
-class LineCoordinateParser
-  : public SingleBranchOutputParser<LineCoordinateResult> {
+class LineCoordinateParser{
  public:
   LineCoordinateParser() {}
   ~LineCoordinateParser() {}
   int32_t Parse(
       std::shared_ptr<LineCoordinateResult>& output,
-      std::vector<std::shared_ptr<InputDescription>>& input_descriptions,
-      std::shared_ptr<OutputDescription>& output_description,
-      std::shared_ptr<DNNTensor>& output_tensor) override;
+      std::shared_ptr<DNNTensor>& output_tensor);
 };
 
 class TrackDetectionNode : public DnnNode {
@@ -67,7 +59,6 @@ class TrackDetectionNode : public DnnNode {
 
  protected:
   int SetNodePara() override;
-  int SetOutputParser() override;
   int PostProcess(const std::shared_ptr<DnnNodeOutput> &outputs) override;
 
  private:
@@ -79,12 +70,17 @@ class TrackDetectionNode : public DnnNode {
   bool GetParams();
   bool AssignParams(const std::vector<rclcpp::Parameter> & parameters);
   ModelTaskType model_task_type_ = ModelTaskType::ModelInferType;
+#ifdef UBUTNU_22
+  rclcpp::Subscription<hbm_img_msgs::msg::HbmMsg1080P>::SharedPtr
+    subscriber_hbmem_ = nullptr;
+#else
   rclcpp::SubscriptionHbmem<hbm_img_msgs::msg::HbmMsg1080P>::SharedPtr
     subscriber_hbmem_ = nullptr;
+#endif
   rclcpp::Publisher<ai_msgs::msg::PerceptionTargets>::SharedPtr publisher_ =
       nullptr;
   cv::Mat image_bgr_;
-  std::string model_path_ = "/opt/nodehub_model/race_detection/race_track_detection_simulation.bin";
+  std::string model_path_ = "config/race_track_detection_simulation.bin";
   std::string sub_img_topic_ = "/hbmem_img";
 };
 
