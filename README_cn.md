@@ -79,3 +79,5 @@ ros2 launch racing_track_detection_resnet racing_track_detection_resnet.launch.p
 
 # 注意
 该功能包提供gazebo仿真环境中可使用的模型以及特定的实际场景中可使用的模型，若自行采集数据集进行训练，请注意替换。
+
+仿真环境参考：https://github.com/wunuo1/race-sim/tree/main
