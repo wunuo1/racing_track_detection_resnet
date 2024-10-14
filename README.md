@@ -80,3 +80,5 @@ RDK obtains environmental data in front of the car through a camera, and the ima
 
 # Note
 This feature pack provides models that can be used in the Gazebo simulation environment as well as models that can be used in specific real-world scenarios. If you collect your own dataset for training, please note to replace it.
+
+Simulation environment reference：https://github.com/wunuo1/race-sim/tree/main
