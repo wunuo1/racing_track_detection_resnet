@@ -60,7 +60,7 @@ def generate_launch_description():
         output='screen',
         parameters=[
             {"sub_img_topic": "/hbmem_img"},
-            {"model_path": "/opt/nodehub_model/race_detection/race_track_detection.bin"}
+            {"model_path": "config/race_track_detection.bin"}
         ],
         arguments=['--ros-args', '--log-level', 'warn']
     )

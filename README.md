@@ -1,65 +1,73 @@
-# 功能介绍
+# Function Introduction
 
-基于深度学习的方法识别图像中赛道的中点并发布消息，使用模型为resnet18
+Based on deep learning methods, identify the midpoint of the track in the image and publish a message using the ResNet18 model
 
-# 使用方法
+# Usage
 
-## 准备工作
+## Preparations
 
-具备真实的机器人或机器人仿真模块，包含运动底盘、相机及RDK套件，并且能够正常运行。
+Equipped with a real robot or robot simulation module, including a motion chassis, camera, and RDK kit, and able to operate normally.
 
-## 安装功能包
+## Compile and Run
 
-**1.安装功能包**
+**1.Compile**
 
-启动机器人后，通过终端SSH或者VNC连接机器人，点击本页面右上方的“一键部署”按钮，复制如下命令在RDK的系统上运行，完成相关Node的安装。
+After starting the robot, connect to it through SSH or VNC on the terminal, click the "One click Deployment" button in the upper right corner of this page, copy the following command and run it on the RDK system to complete the installation of the relevant nodes.
 
 ```bash
-sudo apt update
-sudo apt install -y tros-racing-track-detection-resnet
+# Pull the line center detection code code
+mkdir -p ~/racing_ws/src && cd ~/racing_ws/src
+git clone https://github.com/wunuo1/racing_track_detection_resnet.git -b feature-x5
+
+# Compile
+cd ..
+source /opt/tros/humble/setup.bash
+colcon build
 ```
 
-**2.运行巡线感知功能**
+**2.Operate the line patrol perception function**
 
 ```shell
-source /opt/tros/local_setup.bash
+source ~/racing_ws/install/setup.bash
+cp -r ~/racing_ws/install/racing_track_detection_resnet/lib/racing_track_detection_resnet/config/ .
 
-# web端可视化赛道中点（启动功能后在浏览器打开 ip:8000）
+# Web side visualization track midpoint (open IP: 8000 in the browser after starting the function)
+
 export WEB_SHOW=TRUE
 
-#仿真（使用仿真模型）
+# Simulation (using simulation models)
 ros2 launch racing_track_detection_resnet racing_track_detection_resnet_simulation.launch.py
 
-# 实际场景（使用实际场景中的模型）
+# Actual scenario (using models from actual scenarios)
 ros2 launch racing_track_detection_resnet racing_track_detection_resnet.launch.py
 ```
 
 
-# 原理简介
+# Principle Overview
 
-地平线RDK通过摄像头获取小车前方环境数据，图像数据通过训练好的CNN模型进行推理得到引导线的坐标值并发布。
+RDK obtains environmental data in front of the car through a camera, and the image data is inferred through a trained CNN model to obtain the coordinate values of the guide line and published.
 
-# 接口说明
+# Interface Description
 
-## 话题
+## Topics
 
-### Pub话题
+### Published Topics
 
-| 名称                          | 消息类型                                                     | 说明                                                   |
+| Name                          | Type                        | Description                      |
 | ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
-| /racing_track_center_detection                      | ai_msgs::msg::PerceptionTargets               | 发布赛道中点的图像坐标                 |
+| /racing_track_center_detection                      | ai_msgs::msg::PerceptionTargets               | Publish the image coordinates of the midpoint of the track                 |
 
-### Sub话题
-| 名称                          | 消息类型                                                     | 说明                                                   |
+### Subscribed Topics
+| Name                          | Type                       | Description                       |
 | ----------------------------- | ------------------------------------------------------------ | ------------------------------------------------------ |
-| /hbmem_img                     | hbm_img_msgs/msg/HbmMsg1080P                                    | 接收相机发布的图片消息（640x480）                   |
+| /hbmem_img                     | hbm_img_msgs/msg/HbmMsg1080P                                    | Receive image messages posted by the camera (640x480)                   |
 
-## 参数
+## Parameters
 
-| 参数名                | 类型        | 说明   |
+| Parameter Name        | Type        | Description   |
 | --------------------- | ----------- | -------------------------------------------------------------------------------------------------- |
-| model_path       | string | 推理使用的模型文件，请根据实际模型路径配置，默认值为/opt/nodehub_model/race_detection/race_track_detection_simulation.bin |
-| sub_img_topic       | string |  接收的图片话题名称，请根据实际接收到的话题名称配置，默认值为/hbmem_img |
+| model_path    | string | The model file used for inference should be configured according to the actual model path. The default value is config/race_track_detection_simulation.bin |
+| sub_img_topic | string |  Please configure the received image topic name based on the actual received topic name. The default value is /hbmem_img |
 
-# 注意
-该功能包提供gazebo仿真环境中可使用的模型以及特定的实际场景中可使用的模型，若自行采集数据集进行训练，请注意替换。
+# Note
+This feature pack provides models that can be used in the Gazebo simulation environment as well as models that can be used in specific real-world scenarios. If you collect your own dataset for training, please note to replace it.
